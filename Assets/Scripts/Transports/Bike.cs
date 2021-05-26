@@ -58,12 +58,30 @@ namespace Race
         }
 
         #region Unity events
+        
+        //задача по кнопке пробел спавнить префаб
+        //действие = метод
+        //определяем параметры
+        //1 параметр
+        //уровень доступность =нужен ли метод за пределами класса? private/public
+        // типо возвращаемого значения? = будет ли метод нам что то вычислять?
+        // если нет = void иначе тип который мы считаем
 
+        private GameObject CreateNewPrefabInstance(GameObject sourcePrefab)
+        {
+            return Instantiate(sourcePrefab);
+        }
        
+        [SerializeField] private GameObject m_Prefab;
+
         private void Update()
         {
-          
+          if(Input.GetKeyDown(KeyCode.Space))
+            {
+                CreateNewPrefabInstance(m_Prefab);
+            }
         }
+
         #endregion
     }
 }
