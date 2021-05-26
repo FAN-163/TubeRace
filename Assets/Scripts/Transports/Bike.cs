@@ -34,7 +34,7 @@ namespace Race
         /// <summary>
         /// Data model
         /// </summary>
-        [SerializeField] private BikeParameters m_BikeParameters;
+        [SerializeField] private BikeParameters m_BikeParametersInitial;
 
         /// <summary>
         /// View
@@ -44,6 +44,27 @@ namespace Race
         private BikeParameters m_EffectiveOarameters;
 
         //methods that changes model and view
+
+        //каждый метод это небольшое действие сущности
+        //это действие должно быть максимально эффективно
+        //следует избегать длинных методов, тело метода
+        //повторяющиеся действие это кандидат на вынос в отдельный метод;
+
+        private void DoSomething(Vector3 a, string b)
+        {
+            Debug.Log($"a = {a} | b = {b}");
+
+            m_VisualController.SetupBikeView(m_BikeParametersInitial);
+        }
+
+        #region Unity events
+
+       
+        private void Update()
+        {
+          
+        }
+        #endregion
     }
 }
 

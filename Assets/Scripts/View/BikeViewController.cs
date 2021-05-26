@@ -8,7 +8,7 @@ namespace Race
     {
         public void SetupBikeView(BikeParameters parameters)
         {
-            //      parameters.m_EngineModel;
+            Debug.Log($"parameters = {parameters}");
         }
     }
 }
