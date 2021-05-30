@@ -74,13 +74,13 @@ namespace Race
        
         [SerializeField] private GameObject m_Prefab;
 
-        private void Update()
-        {
-          if(Input.GetKeyDown(KeyCode.Space))
-            {
-                CreateNewPrefabInstance(m_Prefab);
-            }
-        }
+        //private void Update()
+        //{
+        //  if(Input.GetKeyDown(KeyCode.Space))
+        //    {
+        //        CreateNewPrefabInstance(m_Prefab);
+        //    }
+        //}
 
         #endregion
     }
