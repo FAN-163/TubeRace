@@ -13,6 +13,7 @@ namespace Race
         /// <summary>
         /// Радиус трубы
         /// </summary>
+        [Header("Base Track properties")]
         [SerializeField] private float m_Radius;
         public float Radius => m_Radius;
 
@@ -35,6 +36,6 @@ namespace Race
         /// </summary>
         /// <param name="disatance"></param>
         /// <returns></returns>
-        public abstract Vector3 GetDirection(float disatance);
+        public abstract Vector3 GetDirection(float distance);
     }
 }
