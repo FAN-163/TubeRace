@@ -56,7 +56,7 @@ namespace Race
     {
         [SerializeField] private TankParameters m_TankParameters;
 
-        [SerializeField] private ViewController m_VisualController;
+        [SerializeField] private TankViewController m_VisualController;
 
         [SerializeField] private Ammo m_AmmoMainWeapon;
         [SerializeField] private Ammo m_AmmoSecondaryWeapon;
@@ -68,11 +68,7 @@ namespace Race
         private Transform m_AmmunitionSecondarySpawn;
 
         private AccessoriesComplect m_AccessoriesComplect;
-        private Hull m_Hull;
-        private Tower m_Tower;
-        private Engine m_Engine;
-        private Undercarriage m_Undercarriage;
-        private DynamicArmor m_DynamicArmorModel;
+        
 
         #region  Unity events
 
@@ -89,15 +85,8 @@ namespace Race
         /// </summary>
         private void Start()
         {
-            
             m_AmmunitionMainSpawn = m_TankParameters.AmmunitionMainSpawn;
             m_AmmunitionSecondarySpawn = m_TankParameters.AmmunitionSecondarySpawn;
-            m_Tower = m_AccessoriesComplect.GetTower();
-            m_Hull = m_AccessoriesComplect.GetHull();
-            m_Undercarriage = m_AccessoriesComplect.GetUndercarriage();
-            m_Engine = m_AccessoriesComplect.GetEngine();
-
-            m_DynamicArmorModel = m_TankParameters.dynamicArmor.GetComponent<DynamicArmor>();
         }
 
 
@@ -148,7 +137,7 @@ namespace Race
             {
                 if(m_AmmosMainWeapon.Count > 0)
                 {
-                    m_AmmosMainWeapon[0].BrokeCapsule(m_Tower.MainWeaponPointOfShot.position);
+                    m_AmmosMainWeapon[0].BrokeCapsule(m_AccessoriesComplect.GetTower().MainWeaponPointOfShot.position);
                     m_AmmosMainWeapon.Remove(m_AmmosMainWeapon[0]);
                 }
             }
@@ -163,7 +152,7 @@ namespace Race
             {
                 if (m_AmmosSecondaryWeapon.Count > 0)
                 {
-                    m_AmmosSecondaryWeapon[0].BrokeCapsule(m_Tower.SecondaryWeaponPointOfShot.position);
+                    m_AmmosSecondaryWeapon[0].BrokeCapsule(m_AccessoriesComplect.GetTower().SecondaryWeaponPointOfShot.position);
                     m_AmmosSecondaryWeapon.Remove(m_AmmosSecondaryWeapon[0]);
                 }
             }
@@ -198,33 +187,27 @@ namespace Race
         /// <summary>
         /// Замена составных частей танка
         /// </summary>
-        
-
         public void ChangeHull(Hull hull)
         {
             m_AccessoriesComplect.SetHull(hull);
-            m_Hull = hull;
             m_VisualController.ViewTankAccessories(hull.gameObject, m_VisualController.transform).GetComponent<Hull>();
        }
         public void ChangeTower(Tower tower)
         {
             m_AccessoriesComplect.SetTower(tower);
-            m_Tower = tower;
-            m_VisualController.ViewTankAccessories(tower.gameObject, m_Hull.SpawnTower).GetComponent<Tower>();
+            m_VisualController.ViewTankAccessories(tower.gameObject, m_AccessoriesComplect.GetHull().SpawnTower).GetComponent<Tower>();
         }
         public void ChangeUndercarriage(Undercarriage undercarriage)
         {
             m_AccessoriesComplect.SetUndercarriage(undercarriage);
-            m_Undercarriage = undercarriage;
-            m_VisualController.ViewTankAccessories(undercarriage.gameObject, m_Hull.SpawnUndercarriage).GetComponent<Undercarriage>();
+            m_VisualController.ViewTankAccessories(undercarriage.gameObject, m_AccessoriesComplect.GetHull().SpawnUndercarriage).GetComponent<Undercarriage>();
         }
         public void ChangeDynamicArmor(DynamicArmor dynamicArmor)
         {
-            m_DynamicArmorModel = dynamicArmor;
             List<Transform> generalList = new List<Transform>();
-            generalList.AddRange(m_Tower.SpawnDynamicArmor);
-            generalList.AddRange(m_Hull.SpawnDynamicArmor);
-            m_VisualController.ViewDynamicArmor(generalList, dynamicArmor.gameObject);
+            generalList.AddRange(m_AccessoriesComplect.GetTower().SpawnDynamicArmor);
+            generalList.AddRange(m_AccessoriesComplect.GetHull().SpawnDynamicArmor);
+            m_AccessoriesComplect.SetDynamicArmors(m_VisualController.ViewDynamicArmor(generalList, dynamicArmor.gameObject));
         }
 
         #endregion
