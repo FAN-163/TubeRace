@@ -547,6 +547,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bike
       objectReference: {fileID: 0}
+    - target: {fileID: 5421455454124537755, guid: eeb501fd08e6bd84cb8f8bd665b8e552, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5711213832596354660, guid: eeb501fd08e6bd84cb8f8bd665b8e552, type: 3}
       propertyPath: m_Prefab
       value: 
