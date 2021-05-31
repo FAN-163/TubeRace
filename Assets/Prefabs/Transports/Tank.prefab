@@ -39,8 +39,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6016035823647188606}
-  - component: {fileID: 7276615933641052700}
-  - component: {fileID: 1914928842608034382}
+  - component: {fileID: 1912581758130906593}
   m_Layer: 0
   m_Name: VisualObject
   m_TagString: Untagged
@@ -62,7 +61,7 @@ Transform:
   m_Father: {fileID: 2267741350155753829}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7276615933641052700
+--- !u!114 &1912581758130906593
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -71,19 +70,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5845159258491176990}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc30bf5a5d518c641910ae59369ed99c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1914928842608034382
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5845159258491176990}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc30bf5a5d518c641910ae59369ed99c, type: 3}
+  m_Script: {fileID: 11500000, guid: b924a2932e72c1641885779e828f6e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7333383785147215222
@@ -125,6 +112,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 577563667112994083}
+  - component: {fileID: 2485123603601663876}
   m_Layer: 0
   m_Name: Ammunition
   m_TagString: Untagged
@@ -148,6 +136,18 @@ Transform:
   m_Father: {fileID: 2267741350155753829}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2485123603601663876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7870261050108800897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b924a2932e72c1641885779e828f6e38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8154828016004777339
 GameObject:
   m_ObjectHideFlags: 0
@@ -198,19 +198,15 @@ MonoBehaviour:
     StartTheEngine: 0
     AtackMainWeapon: 0
     AtackSecondaryWeapon: 0
-    mass: 0
-    DistansOfFireTurret: 0
-    DistansOfFireGun: 0
     maxSpeed: 0
-    RateOfFireTurret: 0
-    RateOfFireGun: 0
     tower: {fileID: -7556104535224872439, guid: 0170dcbbbbccf6f4f8065227904d4e1e, type: 3}
     hull: {fileID: 5313861064599311675, guid: 8ae02dc6a303aa249a91d7da2cfa7694, type: 3}
     undercarriage: {fileID: 4779029890134250662, guid: 3af8f82ce504b1b488f8247cbb1da8a7, type: 3}
     engine: {fileID: 5986594769561658552, guid: 9ec2a594ad942e4419435d7ebee2095b, type: 3}
     dynamicArmor: {fileID: 3068473490895108443, guid: 859d2a233162a194b8b87005f76a9501, type: 3}
-    AmmunitionSpawn: {fileID: 577563667112994083}
-  m_VisualController: {fileID: 7276615933641052700}
+    AmmunitionMainSpawn: {fileID: 0}
+    AmmunitionSecondarySpawn: {fileID: 0}
+  m_VisualController: {fileID: 1912581758130906593}
   m_AmmoMainWeapon: {fileID: 6869547388664329712, guid: f9b7f478b8d1a26478c0e80404a9ff09, type: 3}
   m_AmmoSecondaryWeapon: {fileID: 6610384515607802895, guid: f09251bab7747054f96cb8881a3d7853, type: 3}
 --- !u!54 &4631510375831571496

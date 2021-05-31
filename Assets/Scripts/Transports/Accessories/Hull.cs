@@ -11,13 +11,9 @@ namespace Race
         [SerializeField] private Transform m_SpawnTower;
         [SerializeField] private Transform m_SpawnUndercarriage;
 
-        [Range(0.0f, 100.0f)]
-        [SerializeField] private float mass = 20.0f;
-
         public List<Transform> SpawnDynamicArmor { get => m_SpawnDynamicArmor; set => m_SpawnDynamicArmor = value; }
         public Transform SpawnEngine { get => m_SpawnEngine; set => m_SpawnEngine = value; }
         public Transform SpawnTower { get => m_SpawnTower; set => m_SpawnTower = value; }
         public Transform SpawnUndercarriage { get => m_SpawnUndercarriage; set => m_SpawnUndercarriage = value; }
-        public float Mass { get => mass; set => mass = value; }
     }
 }
