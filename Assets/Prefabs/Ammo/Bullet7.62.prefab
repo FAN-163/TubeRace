@@ -44,8 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed94155a066d50d4b9d447ef54731d63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Speed: 30
-  m_FlightRange: 100
+  m_Speed: 20
+  m_FlightRange: 20
+  m_Calibre: 7.62 mm
 --- !u!1 &6472634218724739042
 GameObject:
   m_ObjectHideFlags: 0

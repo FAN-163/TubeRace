@@ -11,13 +11,15 @@ namespace Race
         private Tower m_Tower;
         private Engine m_Engine;
         private Undercarriage m_Undercarriage;
+        private List<GameObject> m_DynamicArmors;
 
-        public AccessoriesComplect(Hull hull, Tower tower, Engine engine, Undercarriage undercarriage)
+        public AccessoriesComplect(Hull hull, Tower tower, Engine engine, Undercarriage undercarriage, List<GameObject> dynamicArmor)
         {
             SetHull(hull);
             SetTower(tower);
             SetEngine(engine);
             SetUndercarriage(undercarriage);
+            SetDynamicArmors(dynamicArmor);
         }
 
         public Hull GetHull()
@@ -36,6 +38,10 @@ namespace Race
         {
             return m_Undercarriage;
         }
+        public List<GameObject> GetDynamicArmor()
+        {
+            return m_DynamicArmors;
+        }
 
         public void SetHull(Hull hull)
         {
@@ -52,6 +58,10 @@ namespace Race
         public void SetUndercarriage(Undercarriage undercarriage)
         {
             m_Undercarriage = undercarriage ?? throw new ArgumentNullException(nameof(undercarriage));
+        }
+        public void SetDynamicArmors(List<GameObject> dynamicArmor)
+        {
+            m_DynamicArmors = dynamicArmor ?? throw new ArgumentNullException(nameof(dynamicArmor)); ;
         }
     }
 }

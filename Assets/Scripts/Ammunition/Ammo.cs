@@ -6,20 +6,44 @@ namespace Race
 {
     public abstract class Ammo : MonoBehaviour
     {
-        public abstract string Caliber { get; protected set; }
-        public abstract int Speed { get; protected set; }
+        [Header("Скорость снаряда")]
+        [Range(0.0f, 200.0f)]
+        [SerializeField] private int m_Speed;
 
-        public abstract float FlightRange { get; protected set; }
-        public bool Capsule { get; protected set; }
-       
+        [Header("Дальность полета снаряда")]
+        [Range(0.0f, 300.0f)]
+        [SerializeField] private float m_FlightRange;
 
-       protected Vector3 m_StartPosition;
-       
+        [Header("калибр")]
+        [SerializeField] private string m_Calibre;
+
+        /// <summary>
+        /// Скорость снаряда
+        /// </summary>
+        public int Speed => m_Speed;
+
+        /// <summary>
+        /// Дальность полета
+        /// </summary>
+        public float FlightRange => m_FlightRange;
+
+        /// <summary>
+        /// Калибр
+        /// </summary>
+        public string Caliber => m_Calibre;
+
+        /// <summary>
+        /// Капсуль 
+        /// </summary>
+        private bool m_Capsule;
+
+        protected Vector3 m_StartPosition;
+        
        
 
         protected void Update()
         {
-            if(Capsule)
+            if(m_Capsule)
             {
                 Shot();
             }
@@ -29,18 +53,37 @@ namespace Race
             }
         }
 
-        
 
+        /// <summary>
+        /// Пробиваем капсуль
+        /// </summary>
+        /// <param name="startPosition"></param>
         public void BrokeCapsule(Vector3 startPosition)
         {
-            transform.position = startPosition;
-            m_StartPosition = startPosition;
-            Capsule = true;
+            AmmoToShotPoint(startPosition);
+            m_Capsule = true;
         }
 
+        /// <summary>
+        /// Выстрел
+        /// </summary>
+        /// <param name="startPosition"></param>
         protected void Shot()
         {
             transform.localPosition += new Vector3(0f, 0f, Speed * Time.deltaTime);
         }
+
+       
+        /// <summary>
+        /// Выставляем Ammo в точку выстрела 
+        /// </summary>
+        /// <param name="startPosition"></param>
+        private void AmmoToShotPoint(Vector3 startPosition)
+        {
+            transform.position = startPosition;
+            m_StartPosition = startPosition;
+        }
+
+        
     }
 }
