@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,7 +28,7 @@ namespace Race
     }
 
     /// <summary>
-    /// Controller
+    /// Controller. Entity
     /// </summary>
     public class Bike : MonoBehaviour
     {
@@ -41,48 +42,42 @@ namespace Race
         /// </summary>
         [SerializeField] private BikeViewController m_VisualController;
 
-        private BikeParameters m_EffectiveOarameters;
+        /// <summary>
+        /// Управление газом байка. Нормализованное. от -1 до +1.
+        /// </summary>
+        private float m_ForwardThrustAxis;
 
-        //methods that changes model and view
-
-        //каждый метод это небольшое действие сущности
-        //это действие должно быть максимально эффективно
-        //следует избегать длинных методов, тело метода
-        //повторяющиеся действие это кандидат на вынос в отдельный метод;
-
-        private void DoSomething(Vector3 a, string b)
+        /// <summary>
+        /// Устанавливать значение педали газа
+        /// </summary>
+        /// <param name="val"></param>
+        public void SetForwardThrustAxis(float val)
         {
-            Debug.Log($"a = {a} | b = {b}");
-
-            m_VisualController.SetupBikeView(m_BikeParametersInitial);
+            m_ForwardThrustAxis = val;
         }
 
-        #region Unity events
-        
-        //задача по кнопке пробел спавнить префаб
-        //действие = метод
-        //определяем параметры
-        //1 параметр
-        //уровень доступность =нужен ли метод за пределами класса? private/public
-        // типо возвращаемого значения? = будет ли метод нам что то вычислять?
-        // если нет = void иначе тип который мы считаем
+        /// <summary>
+        /// Управление отклонением влево и вправо. Нормализованноею От -1 до +1.
+        /// </summary>
+        private float m_HorizontalThrustAxis;
 
-        private GameObject CreateNewPrefabInstance(GameObject sourcePrefab)
+        public void SetHorizontalThrustAxis(float val)
         {
-            return Instantiate(sourcePrefab);
+            m_HorizontalThrustAxis = val;
         }
-       
-        [SerializeField] private GameObject m_Prefab;
 
-        //private void Update()
-        //{
-        //  if(Input.GetKeyDown(KeyCode.Space))
-        //    {
-        //        CreateNewPrefabInstance(m_Prefab);
-        //    }
-        //}
+        private void Update()
+        {
+            MoveBike();
+        }
 
-        #endregion
+        private void MoveBike()
+        {
+            float currentForwardVelocity = m_ForwardThrustAxis * m_BikeParametersInitial.maxSpeed;
+            Vector3 forwadMoveDelta = transform.forward * currentForwardVelocity * Time.deltaTime;
+
+            transform.position += forwadMoveDelta; 
+        }
     }
 }
 
