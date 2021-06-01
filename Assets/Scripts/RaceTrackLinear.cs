@@ -28,6 +28,7 @@ namespace Race
             Vector3 direction = m_End.position - m_Start.position;
             direction = direction.normalized;
 
+            
             return m_Start.position + direction * distance;
         }
 
