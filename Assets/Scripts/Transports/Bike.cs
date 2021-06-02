@@ -24,6 +24,9 @@ namespace Race
         [Range(0.0f, 1.0f)]
         public float linearDrag;
 
+        [Range(0.0f, 1.0f)]
+        public float collisionBounceFactor;
+
         public bool afteburner;
 
         public GameObject engineModel;
@@ -78,7 +81,7 @@ namespace Race
         private void Update()
         {
             UpdateBikePhysics();
-            MoveBike();
+//            MoveBike();
         }
 
         private void MoveBike()
@@ -98,7 +101,15 @@ namespace Race
 
             m_Velocity = Mathf.Clamp(m_Velocity, -m_BikeParametersInitial.maxSpeed, m_BikeParametersInitial.maxSpeed);
 
-            m_Distance += m_Velocity * dt;
+            float dS = m_Velocity * dt;
+            //collision
+            if(Physics.Raycast(transform.position, transform.forward, dS))
+            {
+                m_Velocity = -m_Velocity * m_BikeParametersInitial.collisionBounceFactor;
+                dS = m_Velocity * dt;
+            }
+
+            m_Distance += dS;
 
             m_Velocity += -m_Velocity * m_BikeParametersInitial.linearDrag * dt;
 
@@ -114,7 +125,6 @@ namespace Race
             Vector3 trackOffset = q * (Vector3.up * m_Track.Radius);
 
             transform.position = bikePos - trackOffset;
-
             transform.rotation = Quaternion.LookRotation(bikeDir, trackOffset);
         }
     }
