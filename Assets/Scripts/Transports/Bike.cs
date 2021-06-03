@@ -24,6 +24,9 @@ namespace Race
         [Range(0.0f, 1.0f)]
         public float linearDrag;
 
+        [Range(0.0f, 0.5f)]
+        public float rollDrag;
+
         [Range(0.0f, 1.0f)]
         public float collisionBounceFactor;
 
@@ -77,20 +80,14 @@ namespace Race
         private float m_Distance;
         private float m_Velocity;
         private float m_RollAngle;
+        private float m_RollAngleModifier = 1.0f;
 
         private void Update()
         {
             UpdateBikePhysics();
-//            MoveBike();
         }
+        
 
-        private void MoveBike()
-        {
-            float currentForwardVelocity = m_ForwardThrustAxis * m_BikeParametersInitial.maxSpeed;
-            Vector3 forwadMoveDelta = transform.forward * currentForwardVelocity * Time.deltaTime;
-
-            transform.position += forwadMoveDelta; 
-        }
 
         private void UpdateBikePhysics()
         {
@@ -102,6 +99,7 @@ namespace Race
             m_Velocity = Mathf.Clamp(m_Velocity, -m_BikeParametersInitial.maxSpeed, m_BikeParametersInitial.maxSpeed);
 
             float dS = m_Velocity * dt;
+            
             //collision
             if(Physics.Raycast(transform.position, transform.forward, dS))
             {
@@ -117,11 +115,22 @@ namespace Race
                 m_Distance = 0;
 
             m_RollAngle += m_BikeParametersInitial.agility * dt * m_HorizontalThrustAxis;
+            m_RollAngle += -m_RollAngle * m_BikeParametersInitial.rollDrag * dt;
+
 
             Vector3 bikePos = m_Track.GetPosition(m_Distance);
             Vector3 bikeDir = m_Track.GetDirection(m_Distance);
 
+            
             Quaternion q = Quaternion.AngleAxis(m_RollAngle, Vector3.forward);
+
+            //дает возможность байку делать круг по трубе и спускаться с той стороны на которой находится
+            if (q.z >= m_RollAngleModifier || q.z <= -m_RollAngleModifier)
+            {
+                m_RollAngle = -m_RollAngle;
+            }
+
+
             Vector3 trackOffset = q * (Vector3.up * m_Track.Radius);
 
             transform.position = bikePos - trackOffset;

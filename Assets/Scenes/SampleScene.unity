@@ -1555,7 +1555,9 @@ MonoBehaviour:
   m_Track: {fileID: 570570598}
   m_RollAngle: 48.6
   m_Distance: 86.92
+  m_RollSpeed: 0
   m_RadiusModifier: 2.8
+  OnItsAxis: 0
 --- !u!65 &765917060
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2588,6 +2590,7 @@ MonoBehaviour:
     agility: 100
     maxSpeed: 200
     linearDrag: 1
+    rollDrag: 0.4
     collisionBounceFactor: 0.5
     afteburner: 0
     engineModel: {fileID: 0}
@@ -2754,7 +2757,9 @@ MonoBehaviour:
   m_Track: {fileID: 570570598}
   m_RollAngle: 183.54
   m_Distance: 104
+  m_RollSpeed: 0
   m_RadiusModifier: 3.9
+  OnItsAxis: 0
 --- !u!65 &1502969813
 BoxCollider:
   m_ObjectHideFlags: 0
