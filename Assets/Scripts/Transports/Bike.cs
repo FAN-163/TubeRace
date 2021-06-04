@@ -77,10 +77,31 @@ namespace Race
 
         [SerializeField] private RaceTrack m_Track;
 
+        public RaceTrack GetTrack()
+        {
+            return m_Track;
+        }
+
         private float m_Distance;
         private float m_Velocity;
         private float m_RollAngle;
         private float m_RollAngleModifier = 1.0f;
+
+
+        public float GetDistance()
+        {
+            return m_Distance;
+        }
+        public float GetVelocity()
+        {
+            return m_Velocity;
+        }
+        public float GetRollAngle()
+        {
+            return m_RollAngle;
+        }
+        
+
 
         private void Update()
         {
