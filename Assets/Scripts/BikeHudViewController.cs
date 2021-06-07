@@ -12,6 +12,8 @@ namespace Race.UI
         [SerializeField] private Text m_LabelDistance;
         [SerializeField] private Text m_LabelRollAngle;
         [SerializeField] private Text m_LabelLerpNumber;
+        [SerializeField] private Text m_LabelHeat;
+
 
         [SerializeField] private Bike m_Bike;
 
@@ -28,6 +30,9 @@ namespace Race.UI
 
             int laps = (int)(m_Bike.GetDistance()/m_Bike.GetTrack().GetTrackLength());
             m_LabelLerpNumber.text = "Laps: " + (laps + 1).ToString();
+
+            int heat = (int)(m_Bike.GetNormalizedHeat() * 100.0f);
+            m_LabelHeat.text = "Heat: " + heat.ToString();
         }
     }
 }

@@ -14,12 +14,20 @@ namespace Race
         [Range(0.0f, 10.0f)]
         public float mass;
         
-        [Range(0.0f, 10.0f)]
+        [Range(0.0f, 100.0f)]
         public float thrust;
+
+        public float afterburnerThrust;
 
         [Range(0.0f, 100.0f)]
         public float agility;
         public float maxSpeed;
+
+        public float afterburnerMaxSpeedBonus;
+
+        public float afterburnerCoolSpeed;
+        public float afterburnerHeatGeneration; //per second
+        public float afterburnerMaxHeat;
 
         [Range(0.0f, 1.0f)]
         public float linearDrag;
@@ -70,7 +78,12 @@ namespace Race
         /// </summary>
         private float m_HorizontalThrustAxis;
 
-        public void SetHorizontalThrustAxis(float val)
+        /// <summary>
+        /// ¬кл/выкл до ускорител€
+        /// </summary>
+        public bool EnableAfterburner { get; set; }
+
+    public void SetHorizontalThrustAxis(float val)
         {
             m_HorizontalThrustAxis = val;
         }
@@ -106,6 +119,31 @@ namespace Race
         private void Update()
         {
             UpdateBikePhysics();
+            UpdateAfterburnerHeat();
+        }
+        private float m_AfterburnerHeat;
+        
+        public float GetNormalizedHeat()
+        {
+            if(m_BikeParametersInitial.afterburnerMaxHeat > 0)
+                return m_AfterburnerHeat / m_BikeParametersInitial.afterburnerMaxHeat;
+
+            return 0;
+        }
+
+        private void UpdateAfterburnerHeat()
+        {
+            //calc heat dissipation
+            m_AfterburnerHeat -= m_BikeParametersInitial.afterburnerCoolSpeed * Time.deltaTime;
+
+            if(m_AfterburnerHeat < 0 )
+               m_AfterburnerHeat = 0;
+
+            if (EnableAfterburner)
+                m_AfterburnerHeat += m_BikeParametersInitial.afterburnerHeatGeneration * Time.deltaTime; 
+
+            // Check max heat?
+            //***
         }
         
 
@@ -113,11 +151,39 @@ namespace Race
         private void UpdateBikePhysics()
         {
             float dt = Time.deltaTime;
-            float dv = dt * m_ForwardThrustAxis * m_BikeParametersInitial.thrust;
             
+
+            float FthrustMax = m_BikeParametersInitial.thrust;
+            float Vmax = m_BikeParametersInitial.maxSpeed;
+            float F = m_ForwardThrustAxis * m_BikeParametersInitial.thrust ;
+
+            if (EnableAfterburner)
+            {
+                F += m_BikeParametersInitial.afterburnerThrust;
+
+                Vmax += m_BikeParametersInitial.afterburnerMaxSpeedBonus;
+                FthrustMax += m_BikeParametersInitial.afterburnerThrust;
+            }
+
+            //Drag
+            F += -m_Velocity * (FthrustMax / Vmax);
+
+            float dv = dt * F;
+            ;
+
+            // F=ma
+            // F_thrust
+            // f_drag
+            // F = F_thrust -V * K_drag
+            // F_drag = -V * K_drag
+
+            // 0 = F_thrust - Vmax * K_drag
+            // V * K_drag = F_thrust 
+            // K_drag = F_thrust / Vmax
+
             m_Velocity += dv;
 
-            m_Velocity = Mathf.Clamp(m_Velocity, -m_BikeParametersInitial.maxSpeed, m_BikeParametersInitial.maxSpeed);
+            //m_Velocity = Mathf.Clamp(m_Velocity, -m_BikeParametersInitial.maxSpeed, m_BikeParametersInitial.maxSpeed);
 
             float dS = m_Velocity * dt;
             
@@ -130,7 +196,7 @@ namespace Race
 
             m_Distance += dS;
 
-            m_Velocity += -m_Velocity * m_BikeParametersInitial.linearDrag * dt;
+            //m_Velocity += -m_Velocity * m_BikeParametersInitial.linearDrag * dt;
 
             if (m_Distance < 0)
                 m_Distance = 0;
