@@ -16,6 +16,13 @@ namespace Race
         [Range(0.0f, 20.0f)]
         [SerializeField] private float m_RadiusModifier;
 
+        /// <summary>
+        /// количество перегрева от столкневения с данным препятствием
+        /// </summary>
+        [SerializeField] private float m_AmountHeat = 20.0f;
+        public float AmountHeat => m_AmountHeat;
+
+
         [SerializeField] private bool OnItsAxis;
 
         private float m_MaxRollAngle = 360f;

@@ -97,6 +97,7 @@ namespace Race
 
         private float m_Distance;
         private float m_Velocity;
+        private int m_MinSpeedForHeat = 5;
         private float m_RollAngle;
         private float m_RollAngleModifier = 1.0f;
 
@@ -166,31 +167,30 @@ namespace Race
                 FthrustMax += m_BikeParametersInitial.afterburnerThrust;
             }
 
-            //Drag
             F += -m_Velocity * (FthrustMax / Vmax);
 
             float dv = dt * F;
-            ;
-
-            // F=ma
-            // F_thrust
-            // f_drag
-            // F = F_thrust -V * K_drag
-            // F_drag = -V * K_drag
-
-            // 0 = F_thrust - Vmax * K_drag
-            // V * K_drag = F_thrust 
-            // K_drag = F_thrust / Vmax
-
+            
             m_Velocity += dv;
 
             float dS = m_Velocity * dt;
-            
+
+            int speedBeforeCollision = (int)GetVelocity();
             //collision
-            if(Physics.Raycast(transform.position, transform.forward, dS))
+            Ray ray = new Ray(transform.position, transform.forward);
+            RaycastHit hit;
+            if(Physics.Raycast(ray,out hit, dS))
             {
                 m_Velocity = -m_Velocity * m_BikeParametersInitial.collisionBounceFactor;
                 dS = m_Velocity * dt;
+
+                // ѕерегрев если преп€тствие имеет компонент Obstacle, минимальна€ скорость дл€ столкновений -
+                // не двет Heat бесконечно расти когда байк р€дом с преп€тствием
+                if(hit.collider.GetComponent<Obstacle>() && speedBeforeCollision > m_MinSpeedForHeat)
+                {
+                    m_AfterburnerHeat += hit.collider.GetComponent<Obstacle>().AmountHeat;
+                }
+                
             }
 
             m_PrevDistance = m_Distance;
