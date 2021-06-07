@@ -83,7 +83,7 @@ namespace Race
         /// </summary>
         public bool EnableAfterburner { get; set; }
 
-    public void SetHorizontalThrustAxis(float val)
+        public void SetHorizontalThrustAxis(float val)
         {
             m_HorizontalThrustAxis = val;
         }
@@ -115,7 +115,6 @@ namespace Race
         }
         
 
-
         private void Update()
         {
             UpdateBikePhysics();
@@ -131,6 +130,11 @@ namespace Race
             return 0;
         }
 
+        public void CoolAfterburner()
+        {
+            m_AfterburnerHeat = 0;
+        }
+
         private void UpdateAfterburnerHeat()
         {
             //calc heat dissipation
@@ -139,15 +143,10 @@ namespace Race
             if(m_AfterburnerHeat < 0 )
                m_AfterburnerHeat = 0;
 
-            if (EnableAfterburner)
-                m_AfterburnerHeat += m_BikeParametersInitial.afterburnerHeatGeneration * Time.deltaTime; 
-
             // Check max heat?
             //***
         }
         
-
-
         private void UpdateBikePhysics()
         {
             float dt = Time.deltaTime;
@@ -157,8 +156,10 @@ namespace Race
             float Vmax = m_BikeParametersInitial.maxSpeed;
             float F = m_ForwardThrustAxis * m_BikeParametersInitial.thrust ;
 
-            if (EnableAfterburner)
+            if (EnableAfterburner && ConsumeFuelForAfterburner(1.0f * Time.deltaTime))
             {
+                m_AfterburnerHeat += m_BikeParametersInitial.afterburnerHeatGeneration * Time.deltaTime;
+
                 F += m_BikeParametersInitial.afterburnerThrust;
 
                 Vmax += m_BikeParametersInitial.afterburnerMaxSpeedBonus;
@@ -183,8 +184,6 @@ namespace Race
 
             m_Velocity += dv;
 
-            //m_Velocity = Mathf.Clamp(m_Velocity, -m_BikeParametersInitial.maxSpeed, m_BikeParametersInitial.maxSpeed);
-
             float dS = m_Velocity * dt;
             
             //collision
@@ -194,9 +193,9 @@ namespace Race
                 dS = m_Velocity * dt;
             }
 
-            m_Distance += dS;
+            m_PrevDistance = m_Distance;
 
-            //m_Velocity += -m_Velocity * m_BikeParametersInitial.linearDrag * dt;
+            m_Distance += dS;
 
             if (m_Distance < 0)
                 m_Distance = 0;
@@ -211,7 +210,6 @@ namespace Race
             
             Quaternion q = Quaternion.AngleAxis(m_RollAngle, Vector3.forward);
 
-            //дает возможность байку делать круг по трубе и спускаться с той стороны на которой находится
             if (q.z >= m_RollAngleModifier || q.z <= -m_RollAngleModifier)
             {
                 m_RollAngle = -m_RollAngle;
@@ -223,6 +221,42 @@ namespace Race
             transform.position = bikePos - trackOffset;
             transform.rotation = Quaternion.LookRotation(bikeDir, trackOffset);
         }
+
+
+        private float m_PrevDistance;
+
+        public float GetPrevDistance()
+        {
+            return m_PrevDistance;
+        }
+
+        // 0 - 100
+        private float m_Fuel;
+
+        public float GetFuel()
+        {
+            return m_Fuel;
+        }
+
+        public void AddFuel(float amount)
+        {
+            m_Fuel += amount;
+
+            m_Fuel = Mathf.Clamp(m_Fuel, 0, 100);
+        }
+
+        public bool ConsumeFuelForAfterburner(float amount)
+        {
+
+            if (m_Fuel <= amount)
+                return false;
+
+            m_Fuel -= amount;
+
+            return true;
+        }
+
+        public static readonly string Tag = "Bike";
     }
 }
 

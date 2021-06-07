@@ -6,9 +6,12 @@ namespace Race
 {
     public class PowerupFuel : Powerup
     {
-        public override void OnPickedByPlayer()
+        [Range(0.0f, 100.0f)]
+        [SerializeField] private float m_FuelAmount;
+
+        public override void OnPickedByBike(Bike bike)
         {
-            
+            bike.AddFuel(m_FuelAmount);
         }
     }
 }

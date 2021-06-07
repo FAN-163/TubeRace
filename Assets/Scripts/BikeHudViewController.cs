@@ -13,6 +13,7 @@ namespace Race.UI
         [SerializeField] private Text m_LabelRollAngle;
         [SerializeField] private Text m_LabelLerpNumber;
         [SerializeField] private Text m_LabelHeat;
+        [SerializeField] private Text m_LabelFuel;
 
 
         [SerializeField] private Bike m_Bike;
@@ -33,6 +34,10 @@ namespace Race.UI
 
             int heat = (int)(m_Bike.GetNormalizedHeat() * 100.0f);
             m_LabelHeat.text = "Heat: " + heat.ToString();
+
+            int fuel = (int)m_Bike.GetFuel();
+            m_LabelFuel.text = "Fuel: " + fuel.ToString();
+
         }
     }
 }
