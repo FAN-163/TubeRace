@@ -10,6 +10,20 @@ namespace Race
         [SerializeField] private float m_RollAngle;
         [SerializeField] private float m_Distance;
 
+        [Range(0.0f, 20.0f)]
+        [SerializeField] private float m_RadiusModifier;
+
+
+        private float m_StartPoint;
+        private float m_EndPoint;
+        private float m_OffsetAngle;
+        private float m_Test;
+
+        private void Awake()
+        {
+            CalculateSize();
+        }
+
         private void OnValidate()
         {
             SetPowerPosition();
@@ -23,7 +37,7 @@ namespace Race
             Vector3 obstacleDir = m_Track.GetDirection(m_Distance);
 
             Quaternion q = Quaternion.AngleAxis(m_RollAngle, Vector3.forward);
-            Vector3 trackOffset = q * (Vector3.up * (0));
+            Vector3 trackOffset = q * (Vector3.up * (m_RadiusModifier * m_Track.Radius));
 
             transform.position = obstaclePos - trackOffset;
             transform.rotation = Quaternion.LookRotation(obstacleDir, trackOffset);
@@ -33,6 +47,7 @@ namespace Race
         private void Update()
         {
             UpdateBikes();
+//            Debug.Log(m_OffsetAngle);
         }
 
         private void UpdateBikes()
@@ -44,14 +59,31 @@ namespace Race
                 float prev = bike.GetPrevDistance();
                 float curr = bike.GetDistance();
 
-                if(prev < m_Distance && curr > m_Distance)
+                // изменено для бонусов/штрафов имеющих длительное действие
+                if (prev < m_EndPoint && curr > m_StartPoint)
                 {
-                    //limit angles
-
-                    // bike picks powerup
-                    OnPickedByBike(bike);
+                    // limit angles
+                    if ((m_RollAngle - m_OffsetAngle) < bike.GetRollAngle() && (m_RollAngle + m_OffsetAngle) > bike.GetRollAngle())
+                    {
+                        // bike picks powerup
+                        OnPickedByBike(bike);
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// определяем начальную и конечную точку в которой будет действовать бонус или штраф
+        /// и угол отклонения от центра поверапа
+        /// </summary>
+        protected void CalculateSize()
+        {
+            var bounds = GetComponentInChildren<Renderer>().bounds.size;
+
+            m_StartPoint = m_Distance - bounds.z / 2;
+            m_EndPoint = m_Distance + bounds.z / 2;
+
+            m_OffsetAngle = bounds.x;
         }
 
         public abstract void OnPickedByBike(Bike bike);

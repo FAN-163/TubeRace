@@ -245,6 +245,12 @@ namespace Race
             m_Fuel = Mathf.Clamp(m_Fuel, 0, 100);
         }
 
+        // торможение
+        public void Braking(float amount)
+        {
+            m_Velocity -= amount * Time.deltaTime;
+        }
+
         public bool ConsumeFuelForAfterburner(float amount)
         {
 

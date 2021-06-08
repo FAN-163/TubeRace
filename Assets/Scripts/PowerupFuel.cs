@@ -12,6 +12,10 @@ namespace Race
         public override void OnPickedByBike(Bike bike)
         {
             bike.AddFuel(m_FuelAmount);
+
+            // для избегания бесконечного получения бонуса
+            // можно добавить таймер обновления бонуса 
+            m_FuelAmount -= m_FuelAmount;
         }
     }
 }
