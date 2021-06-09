@@ -31,12 +31,21 @@ namespace Race
 
         [SerializeField] private int m_Division;
 
-        [SerializeField] private Vector3[]  m_TrackSamplePoints;
+        [SerializeField] private Vector3[] m_TrackSamplePoints;
+        [SerializeField] private float[] m_TrackSampledSegmentLength;
+        [SerializeField] private float m_TrackSampledLength;
+
+        [SerializeField] private bool m_DebugDrawBezier;
+        [SerializeField] private bool m_DebugSampledPoints;
+
 
         private void OnDrawGizmos()
         {
-            DrawBezierCurve();
-            DrawSempledTrackPoints();
+            if(m_DebugDrawBezier)
+                DrawBezierCurve();
+
+            if(m_DebugSampledPoints)
+                DrawSempledTrackPoints();
         }
 
         public void GenerateTrackDate()
@@ -60,6 +69,25 @@ namespace Race
 
             m_TrackSamplePoints = points.ToArray();
 
+            // precompute lengths
+            {
+                m_TrackSampledSegmentLength = new float[m_TrackSamplePoints.Length - 1];
+
+                m_TrackSampledLength = 0;
+
+                for (int i = 0; i < m_TrackSamplePoints.Length - 1; i++)
+                {
+                    Vector3 a = m_TrackSamplePoints[i];
+                    Vector3 b = m_TrackSamplePoints[i + 1];
+
+                    float segmentLength = (b - a).magnitude;
+
+                    m_TrackSampledSegmentLength[i] = segmentLength;
+                    m_TrackSampledLength += segmentLength;
+                }
+            }
+
+            EditorUtility.SetDirty(this);
 
         }
 
@@ -111,17 +139,54 @@ namespace Race
 
         public override Vector3 GetDirection(float distance)
         {
-            return Vector3.zero;
+
+            distance = Mathf.Repeat(distance, m_TrackSampledLength);
+
+            for (int i = 0; i < m_TrackSampledSegmentLength.Length; i++)
+            {
+                float diff = distance - m_TrackSampledSegmentLength[i];
+
+                if (diff < 0)
+                {
+                    return (m_TrackSamplePoints[i + 1] - m_TrackSamplePoints[i]).normalized;
+                    //return position
+                }
+                else
+                {
+                    distance -= m_TrackSampledSegmentLength[i];
+                }
+            }
+
+            return Vector3.forward;
         }
 
         public override Vector3 GetPosition(float distance)
         {
+            distance = Mathf.Repeat(distance, m_TrackSampledLength);
+
+            for (int i = 0; i < m_TrackSampledSegmentLength.Length; i++)
+            {
+                float diff = distance - m_TrackSampledSegmentLength[i];
+
+                if(diff < 0)
+                {
+                    //return position
+                    float t = distance / m_TrackSampledSegmentLength[i];
+
+                    return Vector3.Lerp(m_TrackSamplePoints[i], m_TrackSamplePoints[i + 1], t);
+                }
+                else
+                {
+                    distance -= m_TrackSampledSegmentLength[i];
+                }
+            }
+
             return Vector3.zero;
         }
 
         public override float GetTrackLength()
         {
-            return 1.0f;
+            return m_TrackSampledLength;
         }
     }
 }
