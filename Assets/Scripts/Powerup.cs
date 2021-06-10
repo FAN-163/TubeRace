@@ -63,7 +63,10 @@ namespace Race
                 if (prev < m_EndPoint && curr > m_StartPoint)
                 {
                     // limit angles
-                    if ((m_RollAngle - m_OffsetAngle) < bike.GetRollAngle() && (m_RollAngle + m_OffsetAngle) > bike.GetRollAngle())
+                    // Думал сделать установку offset через инспектор, но потом решил
+                    // сделать так, чтобы углы зависели от размера puwerup
+                    if ((m_RollAngle - m_OffsetAngle) < bike.GetRollAngle() &&
+                        (m_RollAngle + m_OffsetAngle) > bike.GetRollAngle())
                     {
                         // bike picks powerup
                         OnPickedByBike(bike);
@@ -74,7 +77,7 @@ namespace Race
 
         /// <summary>
         /// определяем начальную и конечную точку в которой будет действовать бонус или штраф
-        /// и угол отклонения от центра поверапа
+        /// и угол отклонения от центра поверапа,
         /// </summary>
         protected void CalculateSize()
         {
