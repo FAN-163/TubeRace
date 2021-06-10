@@ -32,7 +32,7 @@ namespace Race
         [Range(0.0f, 1.0f)]
         public float linearDrag;
 
-        [Range(0.0f, 0.5f)]
+        [Range(0.0f, 10.0f)]
         public float rollDrag;
 
         [Range(0.0f, 1.0f)]
@@ -99,7 +99,7 @@ namespace Race
         private float m_Velocity;
         private int m_MinSpeedForHeat = 5;
         private float m_RollAngle;
-        private float m_RollAngleModifier = 1.0f;
+        //private float m_RollAngleModifier = 1.0f;
 
 
         public float GetDistance()
@@ -209,17 +209,19 @@ namespace Race
 
             
             Quaternion q = Quaternion.AngleAxis(m_RollAngle, Vector3.forward);
-
-            if (q.z >= m_RollAngleModifier || q.z <= -m_RollAngleModifier)
-            {
-                m_RollAngle = -m_RollAngle;
-            }
-
-
             Vector3 trackOffset = q * (Vector3.up * m_Track.Radius);
+            //if (q.z >= m_RollAngleModifier || q.z <= -m_RollAngleModifier)
+            //{
+            //    m_RollAngle = -m_RollAngle;
+            //}
 
-            transform.position = bikePos - trackOffset;
-            transform.rotation = Quaternion.LookRotation(bikeDir, trackOffset);
+            //transform.position = bikePos - trackOffset;
+            //transform.rotation = Quaternion.LookRotation(bikeDir, trackOffset);
+
+            transform.position = bikePos;
+            transform.rotation = m_Track.GetRotation(m_Distance);
+            transform.Rotate(Vector3.forward, m_RollAngle, Space.Self);
+            transform.Translate(-Vector3.up * m_Track.Radius, Space.Self);
         }
 
 

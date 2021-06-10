@@ -31,6 +31,7 @@ namespace Race
 
         [SerializeField] private int m_Division;
 
+        [SerializeField] private Quaternion[] m_TrackSampledRotation;
         [SerializeField] private Vector3[] m_TrackSamplePoints;
         [SerializeField] private float[] m_TrackSampledSegmentLength;
         [SerializeField] private float m_TrackSampledLength;
@@ -54,19 +55,26 @@ namespace Race
                 return;
 
             List<Vector3> points = new List<Vector3>();
+            List<Quaternion> rotations = new List<Quaternion>();
 
             for (int i = 0; i < m_TrackPoints.Length - 1; i++)
             {
-                points.AddRange(GenerateBezierPoints(m_TrackPoints[i], 
-                    m_TrackPoints[i + 1], 
-                    m_Division));
+                var newPoints = GenerateBezierPoints(m_TrackPoints[i], m_TrackPoints[i + 1], m_Division);
+
+                var newRotations = GenerateRotations(m_TrackPoints[i].transform, m_TrackPoints[i + 1].transform, newPoints);
+
+                rotations.AddRange(newRotations);
+                points.AddRange(newPoints);
             }
 
-            points.AddRange(GenerateBezierPoints(
-                m_TrackPoints[m_TrackPoints.Length - 1], 
-                m_TrackPoints[0], 
-                m_Division));
+            // last points
+            var lastPoint = GenerateBezierPoints(m_TrackPoints[m_TrackPoints.Length - 1], m_TrackPoints[0], m_Division);
+            var lastRotations = GenerateRotations(m_TrackPoints[m_TrackPoints.Length - 1].transform, m_TrackPoints[0].transform, lastPoint);
 
+            rotations.AddRange(lastRotations);
+            points.AddRange(lastPoint);
+
+            m_TrackSampledRotation = rotations.ToArray();
             m_TrackSamplePoints = points.ToArray();
 
             // precompute lengths
@@ -91,11 +99,33 @@ namespace Race
 
         }
 
-
-
         private void DrawSempledTrackPoints()
         {
             Handles.DrawAAPolyLine(m_TrackSamplePoints);
+        }
+
+        private Quaternion[] GenerateRotations(Transform a, Transform b, Vector3[] points)
+        {
+            List<Quaternion> rotations = new List<Quaternion>();
+
+            float t = 0;
+
+            for (int i = 0; i < points.Length - 1; i++)
+            {
+                Vector3 dir = (points[i + 1] - points[i]).normalized;
+
+                Vector3 up = Vector3.Lerp(a.up, b.up, t);
+
+                Quaternion rotation = Quaternion.LookRotation(dir, up);
+
+                rotations.Add(rotation);
+
+                t += 1.0f / (points.Length - 1);
+            }
+
+            rotations.Add(b.rotation);
+
+            return rotations.ToArray();
         }
 
         private Vector3[] GenerateBezierPoints(
@@ -182,6 +212,30 @@ namespace Race
             }
 
             return Vector3.zero;
+        }
+
+        public override Quaternion GetRotation(float distance)
+        {
+            distance = Mathf.Repeat(distance, m_TrackSampledLength);
+
+            for (int i = 0; i < m_TrackSampledSegmentLength.Length; i++)
+            {
+                float diff = distance - m_TrackSampledSegmentLength[i];
+
+                if (diff < 0)
+                {
+                    //return position
+                    float t = distance / m_TrackSampledSegmentLength[i];
+
+                    return Quaternion.Slerp(m_TrackSampledRotation[i], m_TrackSampledRotation[i + 1], t);
+                }
+                else
+                {
+                    distance -= m_TrackSampledSegmentLength[i];
+                }
+            }
+
+            return Quaternion.identity;
         }
 
         public override float GetTrackLength()

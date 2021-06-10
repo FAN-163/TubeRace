@@ -37,5 +37,11 @@ namespace Race
         /// <param name="disatance"></param>
         /// <returns></returns>
         public abstract Vector3 GetDirection(float distance);
+
+        public virtual Quaternion GetRotation(float distance)
+        {
+            return Quaternion.identity;
+        }
     }
+
 }

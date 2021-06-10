@@ -11,6 +11,8 @@ namespace Race
         [SerializeField] private int m_NumObjects;
         [SerializeField] private RaceTrack m_Tarck;
 
+        [SerializeField] private bool m_RandomizeRotation;
+
         private void Start()
         {
             float distance = 0;
@@ -20,8 +22,13 @@ namespace Race
                 var e = Instantiate(m_Prefab);
 
                 e.transform.position = m_Tarck.GetPosition(distance);
-                e.transform.forward = m_Tarck.GetDirection(distance);
+                e.transform.rotation = m_Tarck.GetRotation(distance);
 
+                if(m_RandomizeRotation)
+                {
+                    e.transform.Rotate(Vector3.forward, UnityEngine.Random.Range(0, 360), Space.Self);
+                }
+                
                 distance += m_Tarck.GetTrackLength() / m_NumObjects;
             }
         }
