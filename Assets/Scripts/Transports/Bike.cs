@@ -147,6 +147,11 @@ namespace Race
             // Check max heat?
             //***
         }
+
+        public float GetNormalizedSpeed()
+        {
+            return Mathf.Clamp01(m_Velocity / m_BikeParametersInitial.maxSpeed);
+        }
         
         private void UpdateBikePhysics()
         {
