@@ -249,6 +249,9 @@ namespace Race
         public void Braking(float amount)
         {
             m_Velocity -= amount * Time.deltaTime;
+
+            if (m_Velocity < 0)
+                m_Velocity = 0;
         }
 
         public bool ConsumeFuelForAfterburner(float amount)
