@@ -95,6 +95,8 @@ namespace Race
             return m_Track;
         }
 
+        public bool IsMovementControlIsActive { get; set; }
+
         private float m_Distance;
         private float m_Velocity;
         private int m_MinSpeedForHeat = 5;
