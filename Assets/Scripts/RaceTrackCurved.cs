@@ -39,6 +39,7 @@ namespace Race
         [SerializeField] private bool m_DebugDrawBezier;
         [SerializeField] private bool m_DebugSampledPoints;
 
+        //public CurvedTrackPoint[] TrackPoints => m_TrackPoints; 
 
         private void OnDrawGizmos()
         {
@@ -79,7 +80,7 @@ namespace Race
 
             // precompute lengths
             {
-                m_TrackSampledSegmentLength = new float[m_TrackSamplePoints.Length - 1];
+                m_TrackSampledSegmentLength = new float[m_TrackSamplePoints.Length ];
 
                 m_TrackSampledLength = 0;
 
@@ -241,6 +242,11 @@ namespace Race
         public override float GetTrackLength()
         {
             return m_TrackSampledLength;
+        }
+
+        public CurvedTrackPoint[] GetTrackPoints()
+        {
+            return m_TrackPoints;
         }
     }
 }
