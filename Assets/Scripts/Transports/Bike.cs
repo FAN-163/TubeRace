@@ -94,7 +94,7 @@ namespace Race
         {
             return m_Track;
         }
-
+       
         public bool IsMovementControlIsActive { get; set; }
 
         private float m_Distance;
@@ -149,12 +149,11 @@ namespace Race
             // Check max heat?
             //***
         }
-
         public float GetNormalizedSpeed()
         {
             return Mathf.Clamp01(m_Velocity / m_BikeParametersInitial.maxSpeed);
         }
-        
+
         private void UpdateBikePhysics()
         {
             float dt = Time.deltaTime;

@@ -7,7 +7,8 @@ namespace Race
 {
     public class RaceController : MonoBehaviour
     {
-        [SerializeField] private int m_Max_Laps;
+        [SerializeField] private int m_MaxLaps;
+        public int MaxLaps => m_MaxLaps;
 
         // gameplay mode
         // race - laps
@@ -25,6 +26,7 @@ namespace Race
         [SerializeField] private UnityEvent m_EventRaceFinished;
 
         [SerializeField] private Bike[] m_Bikes;
+        public Bike[] Bikes => m_Bikes;
 
         [SerializeField] private int m_CountdownTimer;
 
@@ -35,18 +37,26 @@ namespace Race
 
         public bool IsRaceActive { get; private set; }
 
+        [SerializeField] private RaceCondition[] m_Conditions;
+
         public void StartRace()
         {
             IsRaceActive = true;
 
             m_CountTimer = m_CountdownTimer;
 
-            
+            foreach (var c in m_Conditions)
+                c.OnRaceStart();
         }
 
         public void EndRace()
         {
             IsRaceActive = false;
+
+            foreach (var c in m_Conditions)
+                c.OnRaceEnd();
+
+            m_EventRaceStart?.Invoke();
         }
 
         private void Start()
@@ -60,6 +70,7 @@ namespace Race
                 return;
 
             UpdateRacePrestart();
+            UpdateConditions();
         }
 
         private void UpdateRacePrestart()
@@ -74,6 +85,25 @@ namespace Race
                         e.IsMovementControlIsActive = true;
                 }
             }
+        }
+
+        private void UpdateConditions()
+        {
+            if (!IsRaceActive)
+                return;
+
+            foreach(var c in m_Conditions)
+            {
+                if (!c.IsTriggered)
+                    return;
+            }
+
+            //Race ends
+
+            EndRace();
+
+            m_EventRaceFinished?.Invoke();
+            Debug.Log("Race End");
         }
     }
 }
