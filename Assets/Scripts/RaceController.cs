@@ -7,6 +7,8 @@ namespace Race
 {
     public class RaceController : MonoBehaviour
     {
+        [SerializeField] private RaceTrack m_RaceTrack;
+
         [SerializeField] private int m_MaxLaps;
         public int MaxLaps => m_MaxLaps;
 
@@ -41,12 +43,19 @@ namespace Race
 
         public void StartRace()
         {
+
+            m_ActiveBikes = new List<Bike>(m_Bikes);
+            m_FinishedBikes = new List<Bike>();
+
             IsRaceActive = true;
 
             m_CountTimer = m_CountdownTimer;
 
             foreach (var c in m_Conditions)
                 c.OnRaceStart();
+
+            foreach (var b in m_Bikes)
+                b.OnRaceStart();
         }
 
         public void EndRace()
@@ -55,6 +64,8 @@ namespace Race
 
             foreach (var c in m_Conditions)
                 c.OnRaceEnd();
+
+            
 
             m_EventRaceStart?.Invoke();
         }
@@ -69,8 +80,10 @@ namespace Race
             if (!IsRaceActive)
                 return;
 
+            UpdateBikeRacePositions();
             UpdateRacePrestart();
             UpdateConditions();
+            
         }
 
         private void UpdateRacePrestart()
@@ -89,7 +102,7 @@ namespace Race
 
         private void UpdateConditions()
         {
-            if (!IsRaceActive)
+            if (IsRaceActive)
                 return;
 
             foreach(var c in m_Conditions)
@@ -104,6 +117,43 @@ namespace Race
 
             m_EventRaceFinished?.Invoke();
             Debug.Log("Race End");
+        }
+
+        private List<Bike> m_ActiveBikes;
+        private List<Bike> m_FinishedBikes;
+
+        [SerializeField] private RaceResultsViewController m_RaceResultsViewController; 
+
+        private void UpdateBikeRacePositions()
+        {
+            if(m_ActiveBikes.Count == 0)
+            {
+                EndRace();
+            }
+
+            foreach(var v in m_ActiveBikes)
+            {
+                if (m_FinishedBikes.Contains(v))
+                    continue;
+
+                float dist = v.GetDistance();
+                float totalRaceDistance = m_MaxLaps * m_RaceTrack.GetTrackLength();
+
+                if(dist > totalRaceDistance)
+                {
+                    m_FinishedBikes.Add(v);
+                    v.Statistics.RacePlace = m_FinishedBikes.Count;
+                    v.OnRaceEnd();
+                    
+
+
+                    if(v.IsPlayerBike)
+                    {
+                        m_RaceResultsViewController.Show(v.Statistics);
+                    }
+                }
+            }
+
         }
     }
 }

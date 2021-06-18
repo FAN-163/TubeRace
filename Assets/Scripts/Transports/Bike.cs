@@ -49,6 +49,9 @@ namespace Race
     /// </summary>
     public class Bike : MonoBehaviour
     {
+        [SerializeField] private bool m_IsPlayerBike;
+        public bool IsPlayerBike => m_IsPlayerBike;
+
         /// <summary>
         /// Data model
         /// </summary>
@@ -94,7 +97,7 @@ namespace Race
         {
             return m_Track;
         }
-       
+
         public bool IsMovementControlIsActive { get; set; }
 
         private float m_Distance;
@@ -116,7 +119,7 @@ namespace Race
         {
             return m_RollAngle;
         }
-        
+
 
         private void Update()
         {
@@ -124,10 +127,10 @@ namespace Race
             UpdateAfterburnerHeat();
         }
         private float m_AfterburnerHeat;
-        
+
         public float GetNormalizedHeat()
         {
-            if(m_BikeParametersInitial.afterburnerMaxHeat > 0)
+            if (m_BikeParametersInitial.afterburnerMaxHeat > 0)
                 return m_AfterburnerHeat / m_BikeParametersInitial.afterburnerMaxHeat;
 
             return 0;
@@ -143,8 +146,8 @@ namespace Race
             //calc heat dissipation
             m_AfterburnerHeat -= m_BikeParametersInitial.afterburnerCoolSpeed * Time.deltaTime;
 
-            if(m_AfterburnerHeat < 0 )
-               m_AfterburnerHeat = 0;
+            if (m_AfterburnerHeat < 0)
+                m_AfterburnerHeat = 0;
 
             // Check max heat?
             //***
@@ -157,11 +160,11 @@ namespace Race
         private void UpdateBikePhysics()
         {
             float dt = Time.deltaTime;
-            
+
 
             float FthrustMax = m_BikeParametersInitial.thrust;
             float Vmax = m_BikeParametersInitial.maxSpeed;
-            float F = m_ForwardThrustAxis * m_BikeParametersInitial.thrust ;
+            float F = m_ForwardThrustAxis * m_BikeParametersInitial.thrust;
 
             if (EnableAfterburner && ConsumeFuelForAfterburner(1.0f * Time.deltaTime))
             {
@@ -176,8 +179,11 @@ namespace Race
             F += -m_Velocity * (FthrustMax / Vmax);
 
             float dv = dt * F;
-            
+
             m_Velocity += dv;
+
+            if (m_BikeStatistics.TopSpeed < Mathf.Abs(m_Velocity))
+                m_BikeStatistics.TopSpeed = Mathf.Abs(m_Velocity);
 
             float dS = m_Velocity * dt;
 
@@ -185,18 +191,16 @@ namespace Race
             //collision
             Ray ray = new Ray(transform.position, transform.forward);
             RaycastHit hit;
-            if(Physics.Raycast(ray,out hit, dS))
+            if (Physics.Raycast(ray, out hit, dS))
             {
                 m_Velocity = -m_Velocity * m_BikeParametersInitial.collisionBounceFactor;
                 dS = m_Velocity * dt;
 
-                // ѕерегрев если преп€тствие имеет компонент Obstacle, минимальна€ скорость дл€ столкновений -
-                // не двет Heat бесконечно расти когда байк р€дом с преп€тствием
-                if(hit.collider.GetComponent<Obstacle>() && speedBeforeCollision > m_MinSpeedForHeat)
+                if (hit.collider.GetComponent<Obstacle>() && speedBeforeCollision > m_MinSpeedForHeat)
                 {
                     m_AfterburnerHeat += hit.collider.GetComponent<Obstacle>().AmountHeat;
                 }
-                
+
             }
 
             m_PrevDistance = m_Distance;
@@ -213,16 +217,9 @@ namespace Race
             Vector3 bikePos = m_Track.GetPosition(m_Distance);
             Vector3 bikeDir = m_Track.GetDirection(m_Distance);
 
-            
+
             Quaternion q = Quaternion.AngleAxis(m_RollAngle, Vector3.forward);
             Vector3 trackOffset = q * (Vector3.up * m_Track.Radius);
-            //if (q.z >= m_RollAngleModifier || q.z <= -m_RollAngleModifier)
-            //{
-            //    m_RollAngle = -m_RollAngle;
-            //}
-
-            //transform.position = bikePos - trackOffset;
-            //transform.rotation = Quaternion.LookRotation(bikeDir, trackOffset);
 
             transform.position = bikePos;
             transform.rotation = m_Track.GetRotation(m_Distance);
@@ -271,6 +268,35 @@ namespace Race
         }
 
         public static readonly string Tag = "Bike";
+
+        public class BikeStatistics
+        {
+            public float TopSpeed;
+            public float TotalTime;
+            public int RacePlace;
+            public float BestLapTime;
+        }
+
+        private BikeStatistics m_BikeStatistics;
+        public BikeStatistics Statistics => m_BikeStatistics;
+
+        private void Awake()
+        {
+            m_BikeStatistics = new BikeStatistics();
+        }
+        private float m_RaceStartTime;
+
+        public void OnRaceStart()
+        {
+            m_RaceStartTime = Time.time;
+        }
+
+        public void OnRaceEnd()
+        {
+            m_BikeStatistics.TotalTime = Time.time - m_RaceStartTime;
+
+            Debug.Log($"{m_BikeStatistics.RacePlace} | {m_BikeStatistics.TotalTime} | {m_BikeStatistics.TopSpeed}");
+        }
     }
 }
 
