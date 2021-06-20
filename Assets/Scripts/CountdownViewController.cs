@@ -10,13 +10,21 @@ namespace Race
         [SerializeField] private RaceController m_RaceController;
         [SerializeField] private Text m_Label;
 
+        private float tGo = 0;
+
         private void Update()
         {
             int t = (int)m_RaceController.CountTimer;
 
-            if (t != 0)
+            if (t != 0 )
             {
                 m_Label.text = t.ToString();
+            }
+            else if(t == 0 && (int)tGo >= 0)
+            {
+                m_Label.text = "Go";
+
+                tGo -= Time.deltaTime;
             }
             else
             {
