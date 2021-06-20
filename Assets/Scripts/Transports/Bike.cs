@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Race
@@ -125,6 +126,7 @@ namespace Race
         {
             UpdateBikePhysics();
             UpdateAfterburnerHeat();
+            RecordTheTime();
         }
         private float m_AfterburnerHeat;
 
@@ -280,22 +282,53 @@ namespace Race
         private BikeStatistics m_BikeStatistics;
         public BikeStatistics Statistics => m_BikeStatistics;
 
+        private List<float> m_TimeLaps;
+        private int m_PrevLaps = 0;
+       
         private void Awake()
         {
             m_BikeStatistics = new BikeStatistics();
+            m_TimeLaps = new List<float>();
         }
         private float m_RaceStartTime;
 
         public void OnRaceStart()
         {
             m_RaceStartTime = Time.time;
+            
         }
 
         public void OnRaceEnd()
         {
+            CalculateTheBestLap();
             m_BikeStatistics.TotalTime = Time.time - m_RaceStartTime;
 
             Debug.Log($"{m_BikeStatistics.RacePlace} | {m_BikeStatistics.TotalTime} | {m_BikeStatistics.TopSpeed}");
+        }
+
+        private void RecordTheTime()
+        {
+            int leps = ((int)(GetDistance() / m_Track.GetTrackLength())) + 1;
+
+            if(m_PrevLaps < leps )
+            {
+                m_TimeLaps.Add(Time.time);
+                m_PrevLaps = leps;
+            }
+        }
+
+        private void CalculateTheBestLap()
+        {
+            float[] timeLaps = m_TimeLaps.ToArray();
+            float[] t = new float[timeLaps.Length - 1];
+
+            for (int i = 0; i < timeLaps.Length - 1; i++)
+            {
+                float time = timeLaps[i + 1] - timeLaps[i];
+                t[i] = time;
+            }
+
+            m_BikeStatistics.BestLapTime = t.Min();
         }
     }
 }

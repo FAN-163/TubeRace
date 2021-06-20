@@ -144,8 +144,6 @@ namespace Race
                     m_FinishedBikes.Add(v);
                     v.Statistics.RacePlace = m_FinishedBikes.Count;
                     v.OnRaceEnd();
-                    
-
 
                     if(v.IsPlayerBike)
                     {
@@ -153,7 +151,17 @@ namespace Race
                     }
                 }
             }
+        }
 
+        private void CountingTheBestLap()
+        {
+            foreach(var v in m_Bikes)
+            {
+                if(v.IsPlayerBike)
+                {
+
+                }
+            }
         }
     }
 }
