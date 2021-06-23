@@ -27,5 +27,10 @@ namespace Race
             m_BestLapTime.text = "BestLapTime: " + stats.BestLapTime.ToString() + " second"; 
 
         }
+
+        public void OnButtonEndRace()
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(PauseViewController.MainMenuScene);
+        }
     }
 }
