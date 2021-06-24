@@ -15,19 +15,29 @@ namespace Race
         private void Start()
         {
             if (m_TrackDescription != null)
+            {
                 SetViewValues(m_TrackDescription);
-        }
-
-        public void SetViewValues(TrackDescription desc)
-        {
-            m_ActiveDescription = desc;
-
-            m_TrackName.text = desc.TrackName;
+                SetPreviewImage();
+            }
         }
 
         public void OnButtonStartLevel()
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene(m_ActiveDescription.SceneNickname);
         }
+
+        private void SetViewValues(TrackDescription desc)
+        {
+            m_ActiveDescription = desc;
+
+            m_TrackName.text = desc.TrackName;
+        }
+
+        private void SetPreviewImage()
+        {
+            transform.GetComponent<Image>().sprite = m_TrackDescription.PreviewImage;
+        }
+
+       
     }
 }
