@@ -41,14 +41,7 @@ namespace Race
         [SerializeField] private bool m_DebugSampledPoints;
 
 
-        private void OnDrawGizmos()
-        {
-            if (m_DebugDrawBezier)
-                DrawCircle();
-
-            if (m_DebugSampledPoints)
-                DrawSempledTrackPoints();
-        }
+       
 
         public void GenerateTrackDate()
         {
@@ -82,14 +75,10 @@ namespace Race
                     
                 }
             }
-
+#if UNITY_EDITOR
             EditorUtility.SetDirty(this);
+#endif
 
-        }
-
-        private void DrawSempledTrackPoints()
-        {
-            Handles.DrawAAPolyLine(m_TrackSamplePoints);
         }
 
         private Quaternion[] GenerateRotations(Vector3[] points)
@@ -133,11 +122,7 @@ namespace Race
             return points.ToArray();
         }
 
-        private void DrawCircle()
-        {
-            Handles.DrawWireArc(transform.position, transform.up, transform.right, 360.0f, m_TrackRadius);
-        }
-
+       
         public override Vector3 GetDirection(float distance)
         {
 
@@ -212,5 +197,26 @@ namespace Race
         {
             return m_TrackSampledLength;
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            if (m_DebugDrawBezier)
+                DrawCircle();
+
+            if (m_DebugSampledPoints)
+                DrawSempledTrackPoints();
+        }
+       
+        private void DrawCircle()
+        {
+            Handles.DrawWireArc(transform.position, transform.up, transform.right, 360.0f, m_TrackRadius);
+        }
+
+        private void DrawSempledTrackPoints()
+        {
+            Handles.DrawAAPolyLine(m_TrackSamplePoints);
+        }
+#endif
     }
 }

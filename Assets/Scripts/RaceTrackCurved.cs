@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -38,17 +39,6 @@ namespace Race
 
         [SerializeField] private bool m_DebugDrawBezier;
         [SerializeField] private bool m_DebugSampledPoints;
-
-        //public CurvedTrackPoint[] TrackPoints => m_TrackPoints; 
-
-        private void OnDrawGizmos()
-        {
-            if(m_DebugDrawBezier)
-                DrawBezierCurve();
-
-            if(m_DebugSampledPoints)
-                DrawSempledTrackPoints();
-        }
 
         public void GenerateTrackDate()
         {
@@ -95,14 +85,10 @@ namespace Race
                     m_TrackSampledLength += segmentLength;
                 }
             }
-
+#if UNITY_EDITOR
             EditorUtility.SetDirty(this);
+#endif
 
-        }
-
-        private void DrawSempledTrackPoints()
-        {
-            Handles.DrawAAPolyLine(m_TrackSamplePoints);
         }
 
         private Quaternion[] GenerateRotations(Transform a, Transform b, Vector3[] points)
@@ -129,44 +115,34 @@ namespace Race
             return rotations.ToArray();
         }
 
+        
         private Vector3[] GenerateBezierPoints(
-            CurvedTrackPoint a, 
+            CurvedTrackPoint a,
             CurvedTrackPoint b,
             int division)
         {
-           return Handles.MakeBezierPoints(
-                a.transform.position,
-                b.transform.position,
-                a.transform.position + a.transform.forward * a.GetLegth(),
-                b.transform.position - b.transform.forward * b.GetLegth(),
-                division);
-        }
+            Vector3[] bezierPoints = new Vector3[division];
 
-        private void DrawBezierCurve()
-        {
-            if (m_TrackPoints.Length < 3)
-                return;
+            float div = division;
 
-            for(int i = 0; i < m_TrackPoints.Length - 1; i++)
+            for (int i = 0; i < division; i++)
             {
-                DrawTrackPartGizmo(m_TrackPoints[i], m_TrackPoints[i + 1]);
+                float t = i;
+                float divisionNormalized = (t / div);
+               
+                Vector3 bezierPoint = (float)Math.Pow(1.0f - divisionNormalized, 3) * a.transform.position +
+                   +3 * divisionNormalized * (float)Mathf.Pow(1.0f - divisionNormalized, 2) * (a.transform.position + a.transform.forward * a.GetLegth()) +
+                   +3 * (float)Mathf.Pow(divisionNormalized, 2) * (1.0f - divisionNormalized) * (b.transform.position - b.transform.forward * b.GetLegth()) +
+                   +(float)Mathf.Pow(divisionNormalized, 3) * b.transform.position;
+
+                Debug.Log(divisionNormalized);
+                
+                bezierPoints[i] = bezierPoint;
             }
 
-            DrawTrackPartGizmo(m_TrackPoints[m_TrackPoints.Length - 1] , m_TrackPoints[0]);
+            return bezierPoints;
         }
 
-        private void DrawTrackPartGizmo(CurvedTrackPoint a, CurvedTrackPoint b)
-        {
-
-            Handles.DrawBezier(
-                a.transform.position,
-                b.transform.position,
-                a.transform.position + a.transform.forward * a.GetLegth(),
-                b.transform.position - b.transform.forward * b.GetLegth(),
-                Color.green,
-                Texture2D.whiteTexture,
-                1.0f);
-        }
 
         public override Vector3 GetDirection(float distance)
         {
@@ -248,5 +224,45 @@ namespace Race
         {
             return m_TrackPoints;
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            if (m_DebugDrawBezier)
+                DrawBezierCurve();
+
+            if (m_DebugSampledPoints)
+                DrawSempledTrackPoints();
+        }
+
+        private void DrawBezierCurve()
+        {
+            if (m_TrackPoints.Length < 3)
+                return;
+
+            for (int i = 0; i < m_TrackPoints.Length - 1; i++)
+            {
+                DrawTrackPartGizmo(m_TrackPoints[i], m_TrackPoints[i + 1]);
+            }
+
+            DrawTrackPartGizmo(m_TrackPoints[m_TrackPoints.Length - 1], m_TrackPoints[0]);
+        }
+        private void DrawTrackPartGizmo(CurvedTrackPoint a, CurvedTrackPoint b)
+        {
+            Handles.DrawBezier(
+                a.transform.position,
+                b.transform.position,
+                a.transform.position + a.transform.forward * a.GetLegth(),
+                b.transform.position - b.transform.forward * b.GetLegth(),
+                Color.green,
+                Texture2D.whiteTexture,
+                1.0f);
+        }
+        private void DrawSempledTrackPoints()
+        {
+            Handles.DrawAAPolyLine(m_TrackSamplePoints);
+        }
+
+#endif
     }
 }
