@@ -17,5 +17,12 @@ namespace Race
         [SerializeField] private Sprite m_PreviewImage;
         public Sprite PreviewImage => m_PreviewImage;
 
+        public float TrackLength { get; private set; }
+
+
+        public void SetTrackLangth(float length)
+        {
+            TrackLength = length;
+        }
     }
 }

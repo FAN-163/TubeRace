@@ -9,6 +9,7 @@ namespace Race
     {
         [SerializeField] private TrackDescription m_TrackDescription;
         [SerializeField] private Text m_TrackName;
+        [SerializeField] private Text m_TrackLength;
 
         private TrackDescription m_ActiveDescription;
 
@@ -16,14 +17,18 @@ namespace Race
         {
             if (m_TrackDescription != null)
             {
+         
                 SetViewValues(m_TrackDescription);
                 SetPreviewImage();
+                SetTrackLength(m_ActiveDescription);
+                
             }
         }
 
         public void OnButtonStartLevel()
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene(m_ActiveDescription.SceneNickname);
+            
         }
 
         private void SetViewValues(TrackDescription desc)
@@ -38,6 +43,9 @@ namespace Race
             transform.GetComponent<Image>().sprite = m_TrackDescription.PreviewImage;
         }
 
-       
+        private void SetTrackLength(TrackDescription desc)
+        {
+            m_TrackLength.text = desc.TrackLength.ToString();
+        }
     }
 }

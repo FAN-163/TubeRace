@@ -37,9 +37,12 @@ namespace Race
         [SerializeField] private float[] m_TrackSampledSegmentLength;
         [SerializeField] private float m_TrackSampledLength;
 
+        [SerializeField] private TrackDescription m_TrackDescription;
+
         [SerializeField] private bool m_DebugDrawBezier;
         [SerializeField] private bool m_DebugSampledPoints;
 
+        
         public void GenerateTrackDate()
         {
             if (m_TrackPoints.Length < 3)
@@ -88,7 +91,7 @@ namespace Race
 #if UNITY_EDITOR
             EditorUtility.SetDirty(this);
 #endif
-
+            m_TrackDescription.SetTrackLangth(m_TrackSampledLength);
         }
 
         private Quaternion[] GenerateRotations(Transform a, Transform b, Vector3[] points)
@@ -135,9 +138,8 @@ namespace Race
                    +3 * (float)Mathf.Pow(divisionNormalized, 2) * (1.0f - divisionNormalized) * (b.transform.position - b.transform.forward * b.GetLegth()) +
                    +(float)Mathf.Pow(divisionNormalized, 3) * b.transform.position;
 
-                Debug.Log(divisionNormalized);
-                
                 bezierPoints[i] = bezierPoint;
+
             }
 
             return bezierPoints;
